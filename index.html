@@ -165,7 +165,7 @@
 <body>
 
     <div class="card">
-        <h2>📖 Study With Me 自習室</h2>
+        <h2>Study With Me…</h2>
         <div class="sub-title">keep going!!</div>
 
         <!-- 音樂切換區（自選無版權白噪音 / 雨聲 / 海浪 / 森林） -->
@@ -193,7 +193,7 @@
         </div>
 
         <!-- 大時間顯示區 -->
-        <div class="timer-display" id="timerDisplay">25:00</div>
+        <div class="timer-display" id="timerDisplay">30:00</div>
 
         <!-- 控制按鈕 -->
         <div class="controls">
@@ -237,28 +237,38 @@
 
         // 音樂播放 / 暫停開關
         function toggleMusic() {
-            let audio = document.getElementById('bgAudio');
-            let btn = document.getElementById('musicToggle');
+    let audio = document.getElementById('bgAudio');
+    let btn = document.getElementById('musicToggle');
+    let select = document.getElementById('audioSelect');
 
-            if (audio.paused) {
-                audio.play();
-                btn.innerText = "暫停音樂";
-                btn.style.background = "#C5AF9C";
-                btn.style.color = "#FFF";
-            } else {
-                audio.pause();
-                btn.innerText = "開啟音樂";
-                btn.style.background = "#F3ECE1";
-                btn.style.color = "var(--text-main)";
-            }
+    if (audio.paused) {
+        // 確保播放前有抓到當前選單選中的音樂
+        if (!audio.src || audio.src === "") {
+            audio.src = audioSources[select.value];
         }
+        
+        audio.play().then(() => {
+            btn.innerText = "暫停音樂";
+            btn.style.background = "#C5AF9C";
+            btn.style.color = "#FFF";
+        }).catch(error => {
+            alert("請先點擊頁面任意地方，再嘗試開啟音樂喔！");
+        });
+    } else {
+        audio.pause();
+        btn.innerText = "開啟音樂";
+        btn.style.background = "#F3ECE1";
+        btn.style.color = "var(--text-main)";
+    }
+}
+
     </script>
 
     <script>
-        let durationMinutes = 25;
+        let durationMinutes = 30;
         let timerInterval = null;
         let endTime = null; // 用於關閉螢幕背景精準計算
-        let remainingSeconds = 25 * 60;
+        let remainingSeconds = 30 * 60;
         let isRunning = false;
 
         // 設定倒數分鐘數
@@ -315,14 +325,14 @@
             isRunning = false;
             remainingSeconds = durationMinutes * 60;
             updateDisplay(remainingSeconds);
-            document.getElementById('startBtn').innerText = "start! 🚀";
+            document.getElementById('startBtn').innerText = "let's start🌟";
             document.getElementById('startBtn').style.opacity = "1";
         }
 
         // 完成自習 ➔ 自動累積與記錄（YPT 功能核心）
         function completeStudy() {
             isRunning = false;
-            document.getElementById('startBtn').innerText = "start! 🚀";
+            document.getElementById('startBtn').innerText = "let's start🌟";
             document.getElementById('startBtn').style.opacity = "1";
             
             // 暫停音樂
