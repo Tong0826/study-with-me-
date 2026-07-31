@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aesthetic Study Room</title>
+    <style>
+        :root {
+            --bg-color: #FAF6EE;         /* 燕麥奶油背景 */
+            --card-bg: #FFFFFF;         /* 純白卡片 */
+            --text-main: #5A4E44;       /* 深奶茶色文字 */
+            --text-muted: #8C7A6B;      /* 淺棕色輔助字 */
+            --accent-color: #C5AF9C;    /* 莫蘭迪奶茶 */
+            --accent-hover: #B8A18D;
+            --border-color: #EFE6D8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 24px 16px;
+            margin: 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 420px;
+            padding: 28px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(140, 122, 107, 0.08);
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h2 {
+            margin: 0 0 6px 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .sub-title {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        /* 大倒數計時器數字 */
+        .timer-display {
+            font-size: 52px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 16px 0;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 選擇時間按鈕 */
+        .time-options {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .time-btn {
+            background-color: #F3ECE1;
+            color: var(--text-main);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .time-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        /* 控制按鈕 */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            background-color: var(--accent-color);
+            color: #FFF;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:hover { background-color: var(--accent-hover); }
+        .btn-secondary { background-color: #EFE6D8; color: var(--text-main); }
+
+        /* 表單與音樂控制 */
+        .form-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            background: #FAFAFA;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        /* 音樂開關選單 */
+        .music-box {
+            background: #FAF7F2;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #F2EBE1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* YPT 統計區 */
+        .stats-box {
+            margin-top: 24px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 16px;
+            text-align: left;
+        }
+
+        .log-item {
+            background: #FAF7F2;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            border: 1px solid #F2EBE1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>📖 Study With Me 自習室</h2>
+        <div class="sub-title">專註眼前，每一秒都是累積 ✨</div>
+
+        <!-- 音樂切換區（使用無版權白噪音/雨聲） -->
+        <div class="music-box">
+            <span style="font-size:13px; font-weight:600;">🌧️ 輕柔背景雨聲</span>
+            <button type="button" class="time-btn" id="musicToggle" onclick="toggleMusic()">開啟音樂</button>
+        </div>
+
+        <!-- 學習目標輸入框 -->
+        <div class="form-group">
+            <label>🎯 本次自習目標 / 科目</label>
+            <input type="text" id="subjectInput" placeholder="例如：讀英文單字、寫數學題目...">
+        </div>
+
+        <!-- 選擇幾分鐘倒數 -->
+        <div class="time-options">
+            <button class="time-btn active" onclick="setTimer(25, this)">25 分鐘</button>
+            <button class="time-btn" onclick="setTimer(45, this)">45 分鐘</button>
+            <button class="time-btn" onclick="setTimer(60, this)">60 分鐘</button>
+        </div>
+
+        <!-- 大時間顯示區 -->
+        <div class="timer-display" id="timerDisplay">25:00</div>
+
+        <!-- 控制按鈕 -->
+        <div class="controls">
+            <button class="btn" id="startBtn" onclick="startTimer()">開始自習 🚀</button>
+            <button class="btn btn-secondary" onclick="resetTimer()">重置</button>
+        </div>
+
+        <!-- YPT 每日學習統計卡片 -->
+        <div class="stats-box">
+            <h3 style="font-size:14px; margin:0 0 10px 0;">📊 每日 YPT 學習紀錄</h3>
+            <div id="statsContent" style="font-size:13px; color:var(--text-muted);">
+                載入中...
+            </div>
+            <div id="logsList" style="margin-top:12px;"></div>
+        </div>
+    </div>
+
+    <!-- 無版權 CC0 背景音樂（免費合法商業使用） -->
+    <audio id="rainAudio" loop src="https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg"></audio>
+
+    <script>
+        let durationMinutes = 25;
+        let timerInterval = null;
+        let endTime = null; // 用於關閉螢幕背景精準計算
+        let remainingSeconds = 25 * 60;
+        let isRunning = false;
+
+        // 設定倒數分鐘數
+        function setTimer(mins, btn) {
+            if (isRunning) return;
+            durationMinutes = mins;
+            remainingSeconds = mins * 60;
+            document.querySelectorAll('.time-options .time-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateDisplay(remainingSeconds);
+        }
+
+        function updateDisplay(seconds) {
+            let m = Math.floor(seconds / 60);
+            let s = seconds % 60;
+            document.getElementById('timerDisplay').innerText = 
+                `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        // 開始計時（採用時間戳記法，手機關螢幕也能準確計算）
+        function startTimer() {
+            if (isRunning) return;
+            
+            let subject = document.getElementById('subjectInput').value;
+            if (!subject) {
+                alert("請填寫本次自習目標喔！");
+                return;
+            }
+
+            isRunning = true;
+            document.getElementById('startBtn').innerText = "專注中...";
+            document.getElementById('startBtn').style.opacity = "0.7";
+
+            endTime = Date.now() + remainingSeconds * 1000;
+
+            timerInterval = setInterval(() => {
+                let now = Date.now();
+                let left = Math.round((endTime - now) / 1000);
+
+                if (left <= 0) {
+                    clearInterval(timerInterval);
+                    updateDisplay(0);
+                    completeStudy();
+                } else {
+                    remainingSeconds = left;
+                    updateDisplay(left);
+                }
+            }, 1000);
+        }
+
+        // 重置
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            remainingSeconds = durationMinutes * 60;
+            updateDisplay(remainingSeconds);
+            document.getElementById('startBtn').innerText = "開始自習 🚀";
+            document.getElementById('startBtn').style.opacity = "1";
+        }
+
+        // 完成自習 ➔ 自動累積與記錄（YPT 功能核心）
+        function completeStudy() {
+            isRunning = false;
+            document.getElementById('startBtn').innerText = "開始自習 🚀";
+            document.getElementById('startBtn').style.opacity = "1";
+            
+            // 暫停音樂
+            let audio = document.getElementById('rainAudio');
+            audio.pause();
+            document.getElementById('musicToggle').innerText = "開啟音樂";
+
+            alert("🎉 太棒了！完成了本次自習，已為妳記入 YPT 統計！");
+
+            let subject = document.getElementById('subjectInput').value;
+            let now = new Date();
+            let dateKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+            let timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            let studyLogs = JSON.parse(localStorage.getItem('studyLogs')) || [];
+            studyLogs.unshift({
+                date: dateKey,
+                time: timeStr,
+                subject: subject,
+                mins: durationMinutes
+            });
+
+            localStorage.setItem('studyLogs', JSON.stringify(studyLogs));
+            displayStats();
+        }
+
+        // 無版權音樂開關
+        function toggleMusic() {
+            let audio = document.getElementById('rainAudio');
+            let btn = document.getElementById('musicToggle');
+
+            if (audio.paused) {
+                audio.play();
+                btn.innerText = "暫停音樂";
+                btn.style.background = "#C5AF9C";
+                btn.style.color = "#FFF";
+            } else {
+                audio.pause();
+                btn.innerText = "開啟音樂";
+                btn.style.background = "#F3ECE1";
+                btn.style.color = "var(--text-main)";
+            }
+        }
+
+        // 渲染 YPT 統計數據
+        function displayStats() {
+            let studyLogs = JSON.parse(localStorage.getItem('studyLogs')) || [];
+            let now = new Date();
+            let todayKey = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+
+            // 計算今天累積總時數
+            let todayMins = studyLogs
+                .filter(item => item.date === todayKey)
+                .reduce((sum, item) => sum + parseInt(item.mins), 0);
+
+            let statsContent = document.getElementById('statsContent');
+            statsContent.innerHTML = `🔥 今日專註總時數：<b>${todayMins} 分鐘</b> (${(todayMins/60).toFixed(1)} 小時)`;
+
+            let logsList = document.getElementById('logsList');
+            logsList.innerHTML = '';
+
+            studyLogs.slice(0, 5).forEach(item => {
+                let div = document.createElement('div');
+                div.className = 'log-item';
+                div.innerHTML = `
+                    <b>${item.date} ${item.time}</b><br>
+                    📚 ${item.subject} (${item.mins} 分鐘)
+                `;
+                logsList.appendChild(div);
+            });
+        }
+
+        window.onload = function() {
+            displayStats();
+        };
+    </script>
+
+</body>
+</html>
