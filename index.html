@@ -166,11 +166,16 @@
 
     <div class="card">
         <h2>📖 Study With Me 自習室</h2>
-        <div class="sub-title">專註眼前，每一秒都是累積 ✨</div>
+        <div class="sub-title">keep going!!</div>
 
-        <!-- 音樂切換區（使用無版權白噪音/雨聲） -->
+        <!-- 音樂切換區（自選無版權白噪音 / 雨聲 / 海浪 / 森林） -->
         <div class="music-box">
-            <span style="font-size:13px; font-weight:600;">🌧️ 輕柔背景雨聲</span>
+            <select id="audioSelect" onchange="changeAudioSource()" style="width:auto; padding:6px 10px; margin:0;">
+                <option value="rain">🌧️ 輕柔雨聲</option>
+                <option value="waves">🌊 舒壓海浪</option>
+                <option value="birds">🍃 森林鳥鳴</option>
+                <option value="whitenoise">📻 專注白噪音</option>
+            </select>
             <button type="button" class="time-btn" id="musicToggle" onclick="toggleMusic()">開啟音樂</button>
         </div>
 
@@ -182,7 +187,7 @@
 
         <!-- 選擇幾分鐘倒數 -->
         <div class="time-options">
-            <button class="time-btn active" onclick="setTimer(25, this)">25 分鐘</button>
+            <button class="time-btn active" onclick="setTimer(25, this)">30 分鐘</button>
             <button class="time-btn" onclick="setTimer(45, this)">45 分鐘</button>
             <button class="time-btn" onclick="setTimer(60, this)">60 分鐘</button>
         </div>
@@ -198,7 +203,7 @@
 
         <!-- YPT 每日學習統計卡片 -->
         <div class="stats-box">
-            <h3 style="font-size:14px; margin:0 0 10px 0;">📊 每日 YPT 學習紀錄</h3>
+            <h3 style="font-size:14px; margin:0 0 10px 0;">📈學習紀錄</h3>
             <div id="statsContent" style="font-size:13px; color:var(--text-muted);">
                 載入中...
             </div>
@@ -206,8 +211,47 @@
         </div>
     </div>
 
-    <!-- 無版權 CC0 背景音樂（免費合法商業使用） -->
-    <audio id="rainAudio" loop src="https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg"></audio>
+        // 音效資料庫（皆為無版權 CC0 免費音效）
+        const audioSources = {
+            rain: "https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg",
+            waves: "https://actions.google.com/sounds/v1/water/ocean_waves_into_cave.ogg",
+            birds: "https://actions.google.com/sounds/v1/environments/forest_birds.ogg",
+            whitenoise: "https://actions.google.com/sounds/v1/foley/tv_static.ogg"
+        };
+
+        // 切換音樂來源
+        function changeAudioSource() {
+            let audio = document.getElementById('bgAudio');
+            let select = document.getElementById('audioSelect');
+            let selectedValue = select.value;
+
+            let isPlaying = !audio.paused;
+            audio.src = audioSources[selectedValue];
+
+            // 如果原本就在播放中，換音源後繼續播放
+            if (isPlaying) {
+                audio.play();
+            }
+        }
+
+        // 音樂播放 / 暫停開關
+        function toggleMusic() {
+            let audio = document.getElementById('bgAudio');
+            let btn = document.getElementById('musicToggle');
+
+            if (audio.paused) {
+                audio.play();
+                btn.innerText = "暫停音樂";
+                btn.style.background = "#C5AF9C";
+                btn.style.color = "#FFF";
+            } else {
+                audio.pause();
+                btn.innerText = "開啟音樂";
+                btn.style.background = "#F3ECE1";
+                btn.style.color = "var(--text-main)";
+            }
+        }
+
 
     <script>
         let durationMinutes = 25;
@@ -270,14 +314,14 @@
             isRunning = false;
             remainingSeconds = durationMinutes * 60;
             updateDisplay(remainingSeconds);
-            document.getElementById('startBtn').innerText = "開始自習 🚀";
+            document.getElementById('startBtn').innerText = "start! 🚀";
             document.getElementById('startBtn').style.opacity = "1";
         }
 
         // 完成自習 ➔ 自動累積與記錄（YPT 功能核心）
         function completeStudy() {
             isRunning = false;
-            document.getElementById('startBtn').innerText = "開始自習 🚀";
+            document.getElementById('startBtn').innerText = "start! 🚀";
             document.getElementById('startBtn').style.opacity = "1";
             
             // 暫停音樂
@@ -334,7 +378,7 @@
                 .reduce((sum, item) => sum + parseInt(item.mins), 0);
 
             let statsContent = document.getElementById('statsContent');
-            statsContent.innerHTML = `🔥 今日專註總時數：<b>${todayMins} 分鐘</b> (${(todayMins/60).toFixed(1)} 小時)`;
+            statsContent.innerHTML = `today's minutes：<b>${todayMins} 分鐘</b> (${(todayMins/60).toFixed(1)} 小時)`;
 
             let logsList = document.getElementById('logsList');
             logsList.innerHTML = '';
